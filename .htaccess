@@ -1,0 +1,14 @@
+RewriteEngine On
+RewriteRule ^install(?:/|$) - [R=404,L]
+
+<FilesMatch "(?i)\.(sql|mysql|log|ini|bak)$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "(?i)^(client_secret.*\.json|youtube_token\.json|secrets\.local\.php)$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "(?i)^.*demon.*\.php$">
+    Require all denied
+</FilesMatch>

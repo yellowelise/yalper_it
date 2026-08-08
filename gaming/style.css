@@ -1,0 +1,24 @@
+body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#cameraSelect {
+    margin: 10px;
+    padding: 5px;
+    font-size: 16px;
+}
+
+#video {
+    flex-grow: 1;
+    width: 100%;
+    object-fit: cover;
+}

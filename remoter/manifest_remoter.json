@@ -1,0 +1,36 @@
+{
+	"background_color": "#FFFFFF",
+	"description": "RemoteR - YalpeR",
+	"icons": [
+					{
+					  "src": "favicons/favicon192.png",
+					  "sizes": "192x192",
+					  "type": "image/png"
+					},
+					{
+					  "src": "favicons/favicon512.png",
+					  "type": "image/png",
+					  "sizes": "512x512"
+					}
+				],
+    "screenshots": [
+        {
+            "src": "favicons/512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+	"name": "RemoteR - YalpeR",
+	"short_name": "RemoteR",
+	"start_url": "remoter.php",
+	 "id":"remoter.php",
+	"display": "fullscreen",
+	"scope": "/",
+	"theme_color" :"#FFFFFF",
+	"orientation": "landscape",
+	"related_applications": [{
+		"common_name":"RemoteR - YalpeR",
+		"platform": "webapp",
+		"url": "https://yalper.it/manifest_remoter.json"
+	  }]
+}

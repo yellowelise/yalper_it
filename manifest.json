@@ -1,0 +1,36 @@
+{
+	"background_color": "#FFFFFF",
+	"version": "1.5.1", 
+	"description": "YalpeR - LiveReplay",
+	"icons": [
+					{
+					  "src": "https://yalper.it/favicons/favicon192.png",
+					  "sizes": "192x192",
+					  "type": "image/png"
+					},
+					{
+					  "src": "https://yalper.it/favicons/favicon512.png",
+					  "type": "image/png",
+					  "sizes": "512x512"
+					}
+				],
+    "screenshots": [
+        {
+            "src": "https://yalper.it/favicons/512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+	"name": "YalpeR LiveReplay",
+	"short_name": "YalpeR",
+	"start_url": "https://yalper.it/index.html",
+	 "id":"https://yalper.it/index.html",
+	"display": "fullscreen",
+	"scope": "https://yalper.it/",
+	"theme_color" :"#FAFAFA",
+	"related_applications": [{
+		"common_name":"YalpeR LiveReplay",
+		"platform": "webapp",
+		"url": "https://yalper.it/manifest.json"
+	  }]
+}

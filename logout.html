@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="favicons/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon16.png">
+    <link rel="manifest" href="manifest.json?ff" />
+    <meta name="apple-mobile-web-app-title" content="YalpeR - LiveReplay">
+<meta name="google-adsense-account" content="ca-pub-9880317414365518">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="favicons/favicon180.png">
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9880317414365518"  crossorigin="anonymous"></script>    
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="js/button.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css" type="text/css">
+    <title>YalpeR - LiveReplay</title>
+  </head>
+  <body>
+    <br />
+    <br />
+
+  </body>
+</html>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	const SERVER = "https://yalper.it/";
+    
+    // Creiamo un oggetto con i dati del form
+    const formData = {
+        OTT: localStorage.getItem("OTT")
+    };
+    
+    fetch(SERVER + 'API/logout.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+			//alert(data.OTT);
+			localStorage.setItem('OTT', data.OTT);
+            window.location.href = data.redirect;
+        } else {
+            document.getElementById('errorMessages').innerHTML = '<div class="alert alert-danger">${data.message}</div>';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('errorMessages').innerHTML = '<div class="alert alert-danger">Errore di connessione al server</div>';
+    });
+});
+
+    
+
+</script>	

@@ -1,0 +1,13 @@
+{
+  "devDependencies": {
+    "video.js": "^8.0.4"
+  },
+  "dependencies": {
+    "@videojs/http-streaming": "^3.0.0",
+    "socket.io": "^4.6.1",
+    "videojs-mobile-ui": "^0.7.0",
+    "videojs-playlist": "^5.1.0",
+    "videojs-playlist-ui": "^4.2.0",
+    "videojs-vjsdownload": "^1.0.5"
+  }
+}

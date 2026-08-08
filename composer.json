@@ -1,0 +1,6 @@
+{
+    "require": {
+        "swiftmailer/swiftmailer": "^6.0",
+        "pusher/pusher-php-server": "^7.2"
+    }
+}

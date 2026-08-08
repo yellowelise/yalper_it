@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="shortcut icon" href="favicons/favicon.ico">
+      <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon16.png">
+        <link rel="manifest" href="manifest.json?ff" />
+
+      <!-- Apple -->
+      <meta name="apple-mobile-web-app-title" content="YalpeR - LiveStream">
+      <link rel="apple-touch-icon" sizes="180x180" href="favicons/favicon180.png">
+    <script  src="js/jquery-3.6.4.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?tagdsok2025-03" type="text/css">
+    <script src="js/base64.js"></script>
+    <title>YalpeR - LiveStream</title>
+    <style>
+
+.liveStream_new {
+    position:relative;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -100;
+}
+
+#padre_di_tutto {
+    padding:0px !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    z-index: -99;
+}
+
+body {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overscroll-behavior: cover;
+    -webkit-overflow-scrolling: touch;
+    background: #000;
+}
+
+.live-indicator {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background: rgba(0,0,0,0.7);
+    border-radius: 20px;
+    z-index: 1000;
+}
+
+.live-dot {
+    width: 12px;
+    height: 12px;
+    background: #888;
+    border-radius: 50%;
+    transition: background 0.3s;
+}
+
+.live-dot.recording {
+    background: #f00;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.live-text {
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.live-timer {
+    color: #fff;
+    font-size: 14px;
+    margin-left: 10px;
+}
+
+.stats-panel {
+    position: fixed;
+    top: 60px;
+    left: 15px;
+    background: rgba(0,0,0,0.7);
+    border-radius: 10px;
+    padding: 10px 15px;
+    color: #fff;
+    font-size: 12px;
+    z-index: 1000;
+    min-width: 200px;
+}
+
+.stats-panel div {
+    margin: 5px 0;
+}
+
+.control-panel {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 15px;
+    z-index: 1000;
+}
+
+.btn-live {
+    padding: 15px 40px;
+    font-size: 18px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-start {
+    background: linear-gradient(135deg, #00c853, #00e676);
+    color: #fff;
+}
+
+.btn-start:hover {
+    background: linear-gradient(135deg, #00e676, #69f0ae);
+    transform: scale(1.05);
+}
+
+.btn-stop {
+    background: linear-gradient(135deg, #f44336, #e53935);
+    color: #fff;
+}
+
+.btn-stop:hover {
+    background: linear-gradient(135deg, #e53935, #ef5350);
+    transform: scale(1.05);
+}
+
+.btn-settings {
+    padding: 15px 25px;
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 30px;
+    cursor: pointer;
+}
+
+.settings-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.settings-content {
+    background: #fff;
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.settings-content h3 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.settings-content .form-group {
+    margin-bottom: 15px;
+}
+
+.settings-content label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.settings-content select,
+.settings-content input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.segment-list {
+    position: fixed;
+    top: 60px;
+    right: 15px;
+    background: rgba(0,0,0,0.7);
+    border-radius: 10px;
+    padding: 10px 15px;
+    color: #fff;
+    font-size: 12px;
+    z-index: 1000;
+    max-height: 300px;
+    overflow-y: auto;
+    min-width: 150px;
+}
+
+.segment-list h6 {
+    margin: 0 0 10px 0;
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255,255,255,0.3);
+}
+
+.segment-item {
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.segment-item .status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-left: 8px;
+}
+
+.segment-item .status.pending { background: #ffc107; }
+.segment-item .status.uploading { background: #2196f3; }
+.segment-item .status.done { background: #4caf50; }
+.segment-item .status.error { background: #f44336; }
+
+input[type="range"] {
+    writing-mode: vertical-lr;
+}
+
+/* Stili per la visualizzazione dei segmenti salvati */
+.view-panel {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999;
+}
+
+.btn-view-live {
+    padding: 10px 25px;
+    background: rgba(40, 167, 69, 0.9);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-view-live:hover {
+    background: rgba(40, 167, 69, 1);
+}
+
+#live_videos_container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 3000;
+    display: none;
+    overflow-y: auto;
+}
+
+#live_videos_header {
+    position: sticky;
+    top: 0;
+    background: #1a1a1a;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 3001;
+    border-bottom: 1px solid #333;
+}
+
+#live_videos_header h4 {
+    color: #28a745;
+    margin: 0;
+}
+
+.btn-close-live-view {
+    background: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#live_btn {
+    padding: 20px;
+    padding-bottom: 100px;
+}
+
+/* Player per i video live */
+#live_player_container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 4000;
+    display: none;
+}
+
+#live_player_video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.live-player-controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.live-player-controls button {
+    padding: 10px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+    </style>
+</head>
+
+<body>
+
+<!-- Live Indicator -->
+<div class="live-indicator">
+    <div class="live-dot" id="live_dot"></div>
+    <span class="live-text" id="live_status">OFFLINE</span>
+    <span class="live-timer" id="live_timer">00:00:00</span>
+</div>
+
+<!-- Stats Panel -->
+<div class="stats-panel" id="stats_panel" style="display:none;">
+    <div><strong>Statistiche Live</strong></div>
+    <div>Segmenti salvati: <span id="stat_segments">0</span></div>
+    <div>Prossimo salvataggio: <span id="stat_next_save">--</span></div>
+    <div>Buffer: <span id="stat_buffer">0/0</span></div>
+    <div>Upload in coda: <span id="stat_upload_queue">0</span></div>
+    <div>Connessione: <span id="stat_connection">--</span></div>
+</div>
+
+<!-- Segment List -->
+<div class="segment-list" id="segment_list" style="display:none;">
+    <h6>Segmenti</h6>
+    <div id="segments_container"></div>
+</div>
+
+<!-- Video Container -->
+<div id="padre_di_tutto">
+    <input id="zoomer" type="range" style="position:fixed;top:20vh;left:20px;z-index:101;height: 50vh;display:none;">
+    <video autoplay muted playsinline class="liveStream_new" id="main_video"></video>
+</div>
+
+<!-- View Live Videos Button -->
+<div class="view-panel">
+    <button class="btn-view-live" onclick="showLiveVideos()">📹 Vedi Registrazioni Live</button>
+</div>
+
+<!-- Control Panel -->
+<div class="control-panel">
+    <button class="btn-settings" id="btn_settings" onclick="toggleSettings()">Impostazioni</button>
+    <button class="btn-live btn-start" id="btn_live" onclick="toggleLive()">Vai in LIVE</button>
+</div>
+
+<!-- Live Videos Container -->
+<div id="live_videos_container">
+    <div id="live_videos_header">
+        <h4>📹 Registrazioni Live</h4>
+        <button class="btn-close-live-view" onclick="hideLiveVideos()">✕ Chiudi</button>
+    </div>
+    <div id="live_btn"></div>
+</div>
+
+<!-- Live Video Player -->
+<div id="live_player_container">
+    <video id="live_player_video" playsinline controls></video>
+    <div class="live-player-controls">
+        <button style="background:#6c757d;color:#fff;" onclick="closeLivePlayer()">✕ Chiudi</button>
+        <button style="background:#28a745;color:#fff;" id="btn_next_segment" onclick="playNextSegment()">▶ Prossimo</button>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="settings-modal" id="settings_modal">
+    <div class="settings-content">
+        <h3>Impostazioni LiveStream</h3>
+
+        <div class="form-group">
+            <label>Sorgente Video</label>
+            <select id="camera_select" class="form-control"></select>
+        </div>
+
+        <div class="form-group">
+            <label>Risoluzione</label>
+            <select id="resolution_select" class="form-control">
+                <option value="0">640x360</option>
+                <option value="1">1024x576</option>
+                <option value="2">1152x648</option>
+                <option value="3" selected>1280x720 HD</option>
+                <option value="4">1366x768</option>
+                <option value="5">1600x900</option>
+                <option value="6">1920x1080 Full HD</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Qualità Video</label>
+            <select id="quality_select" class="form-control">
+                <option value="-1">Automatica</option>
+                <option value="standard">Standard</option>
+                <option value="standardPlus">Standard+</option>
+                <option value="highQuality" selected>Hi Quality</option>
+                <option value="bestQuality">Best Quality</option>
+                <option value="ultraQuality">Ultra Quality</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Audio</label>
+            <select id="audio_select" class="form-control">
+                <option value="none">Nessuno (musica in post)</option>
+                <option value="ambient">Cronaca/Ambiente</option>
+                <option value="esultanza">Esultanza</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Durata Segmento (secondi)</label>
+            <select id="segment_duration" class="form-control">
+                <option value="30">30 secondi</option>
+                <option value="60" selected>60 secondi (1 minuto)</option>
+                <option value="120">120 secondi (2 minuti)</option>
+                <option value="180">180 secondi (3 minuti)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Nome Partita</label>
+            <input type="text" id="match_name" class="form-control" placeholder="Es: Juventus vs Milan">
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-6">
+                <button class="btn btn-secondary w-100" onclick="toggleSettings()">Chiudi</button>
+            </div>
+            <div class="col-6">
+                <button class="btn btn-primary w-100" onclick="saveSettings()">Salva</button>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-12">
+                <a href="logout.html" class="btn btn-danger w-100">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="js/live_stream.js?v=2025120401"></script>
+<script>
+// Variabili per il player (usa SERVER da live_stream.js)
+let currentPlaylist = [];
+let currentPlaylistIndex = 0;
+let hlsPlayer = null;
+
+// Funzione per caricare i video live
+function load_live_btn(div = '6', day = null) {
+    const OTT = localStorage.getItem('OTT');
+    const token = localStorage.getItem('token');
+
+    let url = SERVER + 'reload_live_btn.php?OTT=' + encodeURIComponent(OTT) + '&token=' + encodeURIComponent(token) + '&div=' + div;
+    if (day) {
+        url += '&day=' + day;
+    }
+
+    fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('live_btn').innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Errore caricamento video live:', error);
+            document.getElementById('live_btn').innerHTML = '<div class="alert alert-danger" style="margin:20px;">Errore nel caricamento dei video</div>';
+        });
+}
+
+// Mostra il container dei video live
+function showLiveVideos() {
+    document.getElementById('live_videos_container').style.display = 'block';
+    load_live_btn();
+}
+
+// Nasconde il container dei video live
+function hideLiveVideos() {
+    document.getElementById('live_videos_container').style.display = 'none';
+}
+
+// Visualizza un singolo segmento live
+function visualizza_live(element, base64File) {
+    const file = atob(base64File);
+    const url = SERVER + file;
+
+    playHLSVideo(url);
+}
+
+// Riproduce tutti i segmenti in sequenza
+function playAllSegments(base64Files) {
+    currentPlaylist = base64Files.map(b64 => SERVER + atob(b64));
+    currentPlaylistIndex = 0;
+
+    if (currentPlaylist.length > 0) {
+        playHLSVideo(currentPlaylist[0]);
+        updateNextButton();
+    }
+}
+
+// Funzione per riprodurre video HLS
+function playHLSVideo(url) {
+    const container = document.getElementById('live_player_container');
+    const video = document.getElementById('live_player_video');
+
+    container.style.display = 'block';
+
+    // Cleanup del player HLS precedente
+    if (hlsPlayer) {
+        hlsPlayer.destroy();
+        hlsPlayer = null;
+    }
+
+    if (Hls.isSupported()) {
+        hlsPlayer = new Hls();
+        hlsPlayer.loadSource(url);
+        hlsPlayer.attachMedia(video);
+        hlsPlayer.on(Hls.Events.MANIFEST_PARSED, function() {
+            video.play();
+        });
+
+        // Quando il video termina, passa al prossimo
+        video.onended = function() {
+            if (currentPlaylist.length > 0 && currentPlaylistIndex < currentPlaylist.length - 1) {
+                playNextSegment();
+            }
+        };
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        // Safari native HLS support
+        video.src = url;
+        video.addEventListener('loadedmetadata', function() {
+            video.play();
+        });
+        video.onended = function() {
+            if (currentPlaylist.length > 0 && currentPlaylistIndex < currentPlaylist.length - 1) {
+                playNextSegment();
+            }
+        };
+    }
+}
+
+// Passa al prossimo segmento
+function playNextSegment() {
+    if (currentPlaylist.length > 0 && currentPlaylistIndex < currentPlaylist.length - 1) {
+        currentPlaylistIndex++;
+        playHLSVideo(currentPlaylist[currentPlaylistIndex]);
+        updateNextButton();
+    }
+}
+
+// Aggiorna il testo del pulsante next
+function updateNextButton() {
+    const btn = document.getElementById('btn_next_segment');
+    if (currentPlaylist.length > 0) {
+        const remaining = currentPlaylist.length - currentPlaylistIndex - 1;
+        if (remaining > 0) {
+            btn.textContent = '▶ Prossimo (' + remaining + ' rimasti)';
+            btn.style.display = 'inline-block';
+        } else {
+            btn.textContent = 'Fine sessione';
+            btn.style.background = '#6c757d';
+        }
+    }
+}
+
+// Chiude il player
+function closeLivePlayer() {
+    const container = document.getElementById('live_player_container');
+    const video = document.getElementById('live_player_video');
+
+    if (hlsPlayer) {
+        hlsPlayer.destroy();
+        hlsPlayer = null;
+    }
+
+    video.pause();
+    video.src = '';
+    container.style.display = 'none';
+
+    // Reset playlist
+    currentPlaylist = [];
+    currentPlaylistIndex = 0;
+
+    // Reset next button
+    const btn = document.getElementById('btn_next_segment');
+    btn.textContent = '▶ Prossimo';
+    btn.style.background = '#28a745';
+}
+
+// ============ FUNZIONI CONDIVISIONE ============
+
+function showToast(message, isError) {
+    var toast = document.getElementById('share-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'share-toast';
+        toast.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:25px;color:#fff;font-size:14px;z-index:10001;opacity:0;transition:opacity 0.3s;';
+        document.body.appendChild(toast);
+    }
+    toast.style.background = isError ? '#dc3545' : '#28a745';
+    toast.textContent = message;
+    toast.style.opacity = '1';
+    setTimeout(function() { toast.style.opacity = '0'; }, 2500);
+}
+
+function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+            showToast('Link copiato negli appunti!');
+        }).catch(function() {
+            fallbackCopyToClipboard(text);
+        });
+    } else {
+        fallbackCopyToClipboard(text);
+    }
+}
+
+function fallbackCopyToClipboard(text) {
+    var textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.opacity = '0';
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        showToast('Link copiato negli appunti!');
+    } catch (e) {
+        showToast('Impossibile copiare il link', true);
+    }
+    document.body.removeChild(textArea);
+}
+
+function openShareModal(url, title, thumbUrl) {
+    // Rimuovi modal esistente se presente
+    var existingModal = document.getElementById('share-modal');
+    if (existingModal) existingModal.remove();
+
+    var shareText = 'Guarda questa sessione live su YalpeR: ' + title;
+
+    var modal = document.createElement('div');
+    modal.id = 'share-modal';
+    modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;justify-content:center;align-items:center;z-index:10000;padding:20px;box-sizing:border-box;';
+    modal.onclick = function(e) { if (e.target === modal) closeShareModal(); };
+
+    var content = document.createElement('div');
+    content.style.cssText = 'background:#fff;border-radius:20px;padding:30px;max-width:450px;width:100%;text-align:center;position:relative;';
+
+    // Header con titolo e chiudi
+    content.innerHTML = '<button onclick="closeShareModal()" style="position:absolute;top:15px;right:15px;background:none;border:none;font-size:28px;cursor:pointer;color:#999;line-height:1;">&times;</button>' +
+        '<h3 style="margin:0 0 10px 0;color:#333;font-size:22px;font-weight:600;">Condividi sessione</h3>' +
+        '<p style="margin:0 0 25px 0;color:#666;font-size:16px;">' + title + '</p>';
+
+    // Griglia social buttons
+    var socialGrid = document.createElement('div');
+    socialGrid.style.cssText = 'display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:25px;';
+
+    // WhatsApp
+    socialGrid.innerHTML += '<button onclick="shareWhatsApp(\'' + encodeURIComponent(url) + '\', \'' + encodeURIComponent(shareText) + '\')" style="background:#25D366;border:none;border-radius:16px;padding:20px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transition:transform 0.2s;"><svg width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg><span style="color:#fff;font-size:13px;font-weight:500;">WhatsApp</span></button>';
+
+    // Telegram
+    socialGrid.innerHTML += '<button onclick="shareTelegram(\'' + encodeURIComponent(url) + '\', \'' + encodeURIComponent(shareText) + '\')" style="background:#0088cc;border:none;border-radius:16px;padding:20px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transition:transform 0.2s;"><svg width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg><span style="color:#fff;font-size:13px;font-weight:500;">Telegram</span></button>';
+
+    // Facebook
+    socialGrid.innerHTML += '<button onclick="shareFacebook(\'' + encodeURIComponent(url) + '\')" style="background:#1877F2;border:none;border-radius:16px;padding:20px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transition:transform 0.2s;"><svg width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg><span style="color:#fff;font-size:13px;font-weight:500;">Facebook</span></button>';
+
+    // X (Twitter)
+    socialGrid.innerHTML += '<button onclick="shareTwitter(\'' + encodeURIComponent(url) + '\', \'' + encodeURIComponent(shareText) + '\')" style="background:#000;border:none;border-radius:16px;padding:20px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transition:transform 0.2s;"><svg width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg><span style="color:#fff;font-size:13px;font-weight:500;">X</span></button>';
+
+    content.appendChild(socialGrid);
+
+    // Seconda riga: Email e Copia Link
+    var secondRow = document.createElement('div');
+    secondRow.style.cssText = 'display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-bottom:25px;';
+
+    // Email
+    secondRow.innerHTML += '<button onclick="shareEmail(\'' + encodeURIComponent(url) + '\', \'' + encodeURIComponent(title) + '\')" style="background:#EA4335;border:none;border-radius:14px;padding:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform 0.2s;"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg><span style="color:#fff;font-size:15px;font-weight:500;">Email</span></button>';
+
+    // Copia Link
+    secondRow.innerHTML += '<button onclick="copyToClipboard(\'' + url + '\')" style="background:#6c757d;border:none;border-radius:14px;padding:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform 0.2s;"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg><span style="color:#fff;font-size:15px;font-weight:500;">Copia Link</span></button>';
+
+    content.appendChild(secondRow);
+
+    // Native Share (se supportato)
+    if (navigator.share) {
+        var nativeBtn = document.createElement('button');
+        nativeBtn.onclick = function() { shareNative(url, title); };
+        nativeBtn.style.cssText = 'width:100%;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border:none;border-radius:14px;padding:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px;transition:transform 0.2s;';
+        nativeBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>' +
+            '<span style="color:#fff;font-size:16px;font-weight:500;">Altre opzioni...</span>';
+        content.appendChild(nativeBtn);
+    }
+
+    // Link preview
+    var linkPreview = document.createElement('div');
+    linkPreview.style.cssText = 'background:#f5f5f5;border-radius:10px;padding:14px;font-size:13px;color:#666;word-break:break-all;text-align:left;';
+    linkPreview.textContent = url;
+    content.appendChild(linkPreview);
+
+    modal.appendChild(content);
+    document.body.appendChild(modal);
+}
+
+function closeShareModal() {
+    var modal = document.getElementById('share-modal');
+    if (modal) modal.remove();
+}
+
+function shareWhatsApp(url, text) {
+    window.open('https://wa.me/?text=' + text + '%20' + url, '_blank');
+    closeShareModal();
+}
+
+function shareTelegram(url, text) {
+    window.open('https://t.me/share/url?url=' + url + '&text=' + text, '_blank');
+    closeShareModal();
+}
+
+function shareFacebook(url) {
+    window.open('https://www.facebook.com/sharer/sharer.php?u=' + url, '_blank', 'width=600,height=400');
+    closeShareModal();
+}
+
+function shareTwitter(url, text) {
+    window.open('https://twitter.com/intent/tweet?text=' + text + '&url=' + url, '_blank', 'width=600,height=400');
+    closeShareModal();
+}
+
+function shareEmail(url, title) {
+    var subject = encodeURIComponent('Guarda questa sessione live su YalpeR');
+    var body = encodeURIComponent('Ciao!\n\nGuarda questa sessione live registrata con YalpeR:\n' + decodeURIComponent(title) + '\n\n' + decodeURIComponent(url) + '\n\nBuona visione!');
+    window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
+    closeShareModal();
+}
+
+function shareNative(url, title) {
+    if (navigator.share) {
+        navigator.share({
+            title: 'YalpeR - ' + title,
+            text: 'Guarda questa sessione live su YalpeR: ' + title,
+            url: url
+        }).then(function() {
+            closeShareModal();
+        }).catch(function(err) {
+            console.log('Share cancelled or failed:', err);
+        });
+    }
+}
+</script>
+
+</body>
+</html>

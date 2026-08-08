@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="shortcut icon" href="favicons/favicon.ico">
+      <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon32.png">
+      <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon16.png">
+        <link rel="manifest" href="manifest.json?ff" />
+
+      <!-- Apple -->
+      <meta name="apple-mobile-web-app-title" content="YalpeR - LiveReplay">
+    <!--meta name="google-adsense-account" content="ca-pub-9880317414365518"-->
+      <link rel="apple-touch-icon" sizes="180x180" href="favicons/favicon180.png">
+    <script  src="js/jquery-3.6.4.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/hls.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css?tagdsok2025-03" type="text/css">
+    <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
+    <script src="public-config.js"></script>
+    <script src="js/base64.js"></script>
+    <title>YalpeR - LiveReplay</title>
+    <style>
+
+.liveStream {
+    position: fixed; 
+    right: 0; 
+    bottom: 0;
+    min-width: 100%; 
+    min-height: 100%;
+    width: auto; 
+    height: auto;
+    z-index: -100;
+    background-size: cover;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}				
+    .vertical-scrollable {
+            position: absolute;
+            top: 40px;
+            bottom: 40px;
+            left: 10px;
+            width: 45%;
+            overflow-y: scroll;
+        }				
+    .a_destra {
+            position: absolute;
+            top: 40px;
+            bottom: 40px;
+            right: 10px;
+            width: 45%;
+        }	
+
+header {
+    position: relative;
+    height: 100vh;
+    z-index: 0;
+}
+
+header #video {
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -ms-transform: translateX(-50%) translateY(-50%);
+    -o-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    position: absolute;
+   top: 50%;
+   left: 50%;
+   # top: 0;
+   # left: 0;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: -1000;
+}      
+
+video {
+#	background: url('favicons/512.png') 50% 50% / contain no-repeat ;	
+#  object-fit: fill;
+}  			
+
+
+.messaggio {
+ position: absolute;
+ top: 50%;
+ left: 50%;
+ transform: translate(-50%, -50%);
+ font-size: 48px;
+ text-align: center;
+ z-index:1;
+ display:none;
+ width:200px;
+ height:200px;
+ background:url('img/big_rotate.webp') 50% 50% / contain no-repeat;
+}
+
+
+
+
+
+.reaction-container {
+    position:relative;
+
+    padding: 3px;
+    display: flex;
+    width:90%;
+    align-items: center;
+    bottom:0px;
+    gap: 0px;
+    background: #f5f5f5;
+    z-index:10000;
+}
+
+.view-count {
+    color: #666;
+    font-size: 14px;
+}
+
+.reaction-buttons {
+    display: flex;
+    gap: 5px;
+}
+
+.reaction-btn {
+    padding: 4px 8px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: #fff;
+    border: 1px solid #ddd;
+}
+
+.reaction-btn.active {
+    background: #4CAF50;
+    color: white;
+}
+
+        a:link { 
+  text-decoration: none; 
+} 
+
+#padre_di_tutto {
+    padding:0px !important;
+    position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  z-index: -99;
+
+}
+
+.liveStream_new {
+    position:relative;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;  /* Mantiene le proporzioni coprendo l'area */
+    z-index: -100;
+
+}
+
+input[type="range"] {
+  writing-mode: vertical-lr;
+
+  #margin-left:20px;
+  #margin-top:40px;
+}
+
+
+.btn_tags {
+    position:fixed;
+    display:none;
+    z-index:21000;
+}
+
+body {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overscroll-behavior: cover;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media screen and (orientation:portrait) { 
+    .player_video {
+            width:90%;
+            border:2px solid #22F;
+            max-height:30vh;
+            margin-top:1vh;
+            margin-left:2vh;
+            z-index:99999;
+            background-color:#000;
+        }
+    .reaction-container {
+
+            margin-top:-10px !important;
+            margin-left:2vh;
+    }
+
+    #elimina_video {
+        left:0px;
+        right:inherit !important;
+
+    }
+    #condividi_file_singolo {
+        right:0px !important;
+    }
+    #condividi_files_multipli {
+        right:0px !important;
+    }
+    .lista_btn {
+            height:50vh;
+            overflow-y: scroll;
+    }	
+    }
+ @media screen and (orientation:landscape) {
+    .player_video {
+            width:90%;
+            border:2px solid #22F;
+            max-height:60vh;
+            margin-top:5vh;
+            z-index:99999;
+            background-color:#000;
+        }
+
+    .reaction-container {
+
+            margin-top:-10px !important;
+    }
+    #condividi_file_singolo {
+        right:0px !important;
+    }
+    #condividi_files_multipli {
+        right:0px !important;
+    }
+
+    .lista_btn {
+            height:calc(100vh - 95px);
+            overflow-y: scroll;
+    }	
+
+     }
+
+
+
+    </style>
+</head>
+
+<body>
+
+
+
+
+<div class="modal fade" id="sharingModal" tabindex="-1" role="dialog" aria-labelledby="sharingModal" aria-hidden="true" style="z-index:999999;">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="titleSharingModal">Condividi i video...</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+            <div class="row">
+                    <div class='col-12'>Titolo</div>
+                    <div class='col-12'>
+                        <input type="text" id="title" name="title" class="form-control" />
+                    </div>
+            </div>	
+            <div class="row">
+                    <div class='col-12'>Visibilità</div>
+                    <div class='col-12'>
+                        <select id="visibility" name="visibility" class="form-control">
+                            <option value="4">Tutti, pubblicato sulle bacheche</option>
+                            <option value="3">Basta il link</option>
+                            <option value="2">Solo Amici di Amici</option>
+                            <option value="1">Solo Amici</option>
+                            <option value="0">Solo io</option>
+                        </select>	
+
+                    </div>
+            </div>	
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick=closeModal()>Annulla</button>
+        <button type="button" class="btn btn-success"  data-bs-dismiss="modal" onclick="onShare()">Condividi</button>
+      </div>
+    </div>
+  </div>
+</div>
+    <div id="action_timer" style="position:fixed;top:10px;right:10px;font-size:2rem;color:#fff;text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;z-index:10000;">00:00</div>
+    <header style="overscroll-behavior: contain;">  
+    <input id="zoomer" type="range" style="position:fixed;top:20vh;left:20px;z-index:101;height: 50vh;">		
+
+    <div  style="position:relative;"  id="padre_di_tutto">	
+        <div id="log" class="vertical-scrollable" style="position:fixed;left: 55px; bottom: 45px;top:40px;font-size:12px;color:#fff;text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;display:none;"></div>	
+
+    <div class="row" style="position:absolute;top:10px;left:1px;width:100%;z-index:9999;">
+        <div class="col-md-6 col-sm-6 col-xs-12" id="wrapper_camera_list">
+            <a href="javascript:;" class="btn btn-sm btn-warning primo_piano" onclick='visualizza_panel("wrapper_settings_camera");' id="btn_impostazioni" style="z-index:191919 !important;height:33.8px">Impostazioni</a>
+            <a id="btn_ruota" href="javascript:;" class="btn btn-sm btn-light " onclick=change_orientation()><img src="img/orientation.png"></a>
+            <a id="btn_conn" href="javascript:;" class="btn btn-sm btn-light " style="height:33.8px;opacity: 0.5;">...</a>
+
+
+        </div>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="text-center" id="overlay"  onclick='visualizza_panel("wrapper_settings_partita");' class="primo_piano" ></div>
+            <div  id="coda_file" style='position:absolute;color:#F22;text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;right:10px;top:38px;'></div>	
+        </div>
+
+            <div id="wrapper_settings_camera" class="pannello" style="background-color:#ddd;display:none;padding:6px;z-index:999001 !important;margin-left:10px;">
+                <div id="settings" class="row">
+                    <div class="col-6">
+                    <h6>Durata</h6>
+                    <select class="form-control" id="duration" name="duration" onchange=change_duration()>
+                        <option value="10">10 Sec.</option>
+                        <option value="15">15 Sec.</option>
+                        <option value="20">20 Sec.</option>
+                        <option value="25">25 Sec.</option>
+                        <option value="30">30 Sec.</option>
+                    </select>	
+                    </div>
+
+
+                    <div class="col-6">
+                    <h6>Audio</h6>
+                        <select id="audio_source" class="form-control" onchange="save_audio_source(this.value)">
+                          <option value="none">Musica</option>
+                          <option value="ambient">Cronaca</option>
+                          <option value="esultanza">Esultanza</option>
+                        </select>				
+                    </div>
+
+
+                    <div class="col-6">
+
+                    <h6>Versione</h6>
+                        <select id="version" name="version" class="form-control" onchange=change_version()>	
+                            <option value="0">640x360</option>
+                            <option value="1">1024x576</option>
+                            <option value="2">1152x648</option>
+                            <option value="3" >1280x720 HD</option>
+                            <option value="4">1366x768</option>
+                            <option value="5">1600x900</option>
+                            <option value="6">1920x1080 Full HD</option>
+                            <option value="7">2560x1440</option>
+                            <option value="8">3840x2160 4K UHD</option>
+                            <option value="9">IPhone / iOS (FullHD)</option>
+
+                        </select>						
+                    </div>
+                    <div class="col-6">
+                    <h6>Qualità Video</h6>
+                    <select id="vbps" name="vbps" class="form-control" onchange=change_vbps()>	
+                        <option value="-1">Automatica</option>
+                        <option value="standard">Standard</option>
+                        <option value="standardPlus">Standard+</option>
+                        <option value="highQuality">Hi Quality</option>
+                        <option value="bestQuality">Best Quality</option>
+                        <option value="ultraQuality">Ultra Quality</option>
+                    </select>						
+                </div>
+
+                </div>
+                <h6>Ingressi Video</h6>
+
+                <div id="camera_list">
+                </div>
+                <div class="row" style="margin-top: 10px;">
+                    <div class="col-12">
+                        <a href="logout.html" class="btn btn-danger btn-sm" style="width:100%;">Logout</a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="wrapper_settings_partita"  class="pannello" style="background-color:#ddd;display:none;padding:6px;z-index:999001 !important;margin-left:10px;">
+                <div class="row">
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                    <h6>Casa</h6>
+                    <input type="text" maxlength="14" class="form-control" id="txt_home" onkeypress=soloAlfanumericoConSpazi(event);>
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                    <h6>Goal Casa</h6>
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off"  class="form-control" id="home_goal" onkeypress=soloNumerico(event);>
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                    <h6>Goal Ospiti</h6>
+                    <input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off"   class="form-control" id="away_goal" onkeypress=soloNumerico(event);>
+                    </div>
+                    <div class="col-md-3 col-sm-6 col-xs-12">
+                    <h6>Ospiti</h6>
+                    <input type="text" maxlength="14" class="form-control" id="txt_away" onkeypress=soloAlfanumericoConSpazi(event);>
+                    </div>
+                    <div class="col-md-2 col-sm-6 col-xs-12">
+                        <h6>Minuto</h6>
+                        <input  type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off"  class="form-control" id="minutes"  onkeypress=soloNumerico(event);>
+
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                        <h6>Tempo</h6>
+                            <select id="indicatore_tempo" class="form-control" onchange=reset_minuti()>
+                                    <option value="PT">Primo Tempo</option>
+                                    <option value="ST">Secondo Tempo</option>
+                                    <option value="TT">Terzo Tempo</option>
+                            </select>	
+
+                    </div>
+                    <div class="col-12">&nbsp;</div>
+
+                    <div class="col-md-12 col-sm-12">
+                        <a href="javascript:;" class="btn btn-success " style="position:absolute;bottom:5px;right:5px;" onclick=salvaSettingsEvento()>Salva</a>
+                    </div>
+                </div>
+            </div>
+    </div>	
+
+        <!--div  id="PhotoWrapper" style="width:320px;height:240px;z-index:1000;position:fixed;top:50px;right:0px;border:2px solid red;"></div-->
+        <!--video class="liveStream hidden" style="display:block" controls autoplay></video-->
+        <video autoplay muted playsinline class="liveStream_new" id="main_video" onclick="hide_all()" ></video>
+          <!--canvas class="liveStream" style="display:block"></canvas-->
+
+        <!--button class="photo" onclick=TakePhotoButtonClick() style="position:fixed;right: 0%; bottom: 15%;z-index:2000;" id="photo">Foto!</button-->
+        <!--button class="azione" onclick=save_Replay() style="position:fixed;right: 0%; bottom: 0px;" id="salva_replay" disabled>Salva Replay<br />Azione</button>
+        <button class="goal" onclick=save_Replay_goal() style="position:fixed;right: 30%; bottom: 0px;" id="salva_replay_goal" disabled>Salva Replay<br />Goal!!!</button-->
+        <button class="tags noi btn_tags" style="width:31vw;height:20vh;left: 1vw;bottom: calc(42vh + 60px);font-size: 1.49rem;word-break: break-all;"  onclick=save_Replay("Giocata-"+txt_home,0,0,Math.ceil(bblen/2)) >Giocata <span style="font-size:0.6rem;position:absolute;bottom:2px;right:4px;" class="home_tags">Casa</span><span style="font-size:0.5rem;position:absolute;bottom:12px;left:4px;" class="half_time"></span></button>
+        <button class="tags noi btn_tags" style="width:31vw;height:20vh;left: 1vw; bottom: calc(21vh + 60px);font-size: 1.39rem;word-break: break-all;" onclick=save_Replay("Occasione-"+txt_home,0,0,bblen)>Occasione <span style="font-size:0.6rem;position:absolute;bottom:2px;right:4px;" class="home_tags">Casa</span><span style="font-size:0.5rem;position:absolute;bottom:12px;left:4px;" class="full_time"></span></button>
+        <button class="tags noi btn_tags" style="width:31vw;height:20vh;left: 1vw; bottom: 60px;font-size: 1.85rem;word-break: break-all;" onclick=save_Replay("Gol-"+txt_home,1,0,bblen) >GOAL <span style="font-size:0.6rem;position:absolute;bottom:2px;right:4px;" class="home_tags">Casa</span><span style="font-size:0.5rem;position:absolute;bottom:12px;left:4px;" class="full_time"></span></button>
+
+        <button class="tags entrambi btn_tags" style="width:31vw;height:20vh;left: 34vw;bottom: calc(42vh + 60px);font-size: 1.49rem;word-break: break-all;"  onclick=save_Replay("Palla-Inattiva",0,0,bblen) >Palla Inattiva <span style="font-size:0.6rem;position:absolute;bottom:2px;right:4px;">Entrambi</span><span style="font-size:0.5rem;position:absolute;bottom:12px;left:4px;" class="full_time"></span></button>
+        <button class="tags entrambi btn_tags" style="width:31vw;height:20vh;left: 34vw; bottom: calc(21vh + 60px);font-size: 1.49rem;word-break: break-all;" onclick=save_Replay("Cartellino",0,0,Math.ceil(bblen/2))>Cartellino <span style="font-size:0.6rem;position:absolute;bottom:2px;right:4px;">Entrambi</span><span style="font-size:0.5rem;position:absolute;bottom:12px;left:4px;" class="half_time"></span></button>
+        <button class="tags entrambi btn_tags" style="width:31vw;height:20vh;left: 34vw; bottom: 60px;font-size: 1.39rem;word-break: break-all;" onclick=save_Replay("Sostituzione",0,0,Math.ceil(bblen/2)) >Sostituzione <span style="font-size:0.6rem;position:absolute;bottom:2px;right:4px;">Entrambi</span><span style="font-size:0.5rem;position:absolute;bottom:12px;left:4px;" class="half_time"></span></button>
+
+
+        <button class="tags loro btn_tags" style="width:31vw;height:20vh;right:2vw; bottom: calc(42vh + 60px);font-size: 1.49rem;word-break: break-all;"  onclick=save_Replay("Giocata-"+txt_away,0,0,Math.ceil(bblen/2)) >Giocata <span style="font-size:0.6rem;position:absolute;bottom:2px;right:4px;" class="away_tags">Ospiti</span><span style="font-size:0.5rem;position:absolute;bottom:12px;left:4px;" class="half_time"></span></button>
+        <button class="tags loro btn_tags" style="width:31vw;height:20vh;right:2vw; bottom: calc(21vh + 60px);font-size: 1.39rem;word-break: break-all;" onclick=save_Replay("Occasione-"+txt_away,0,0,bblen) >Occasione <span style="font-size:0.6rem;position:absolute;bottom:2px;right:4px;" class.away_tags">Ospiti</span><span style="font-size:0.5rem;position:absolute;bottom:12px;left:4px;" class="full_time"></span></button>
+        <button class="tags loro btn_tags" style="width:31vw;height:20vh;right:2vw; bottom: 60px;font-size: 1.85rem;word-break: break-all;" onclick=save_Replay("Gol-"+txt_away,0,1,bblen) >GOAL <span style="font-size:0.6rem;position:absolute;bottom:2px;right:4px;" class="away_tags">Ospiti</span><span style="font-size:0.5rem;position:absolute;bottom:12px;left:4px;" class="full_time"></span></button>
+
+        <a href="javascript:;" class="btn btn-sm btn-primary" id="timer_button" style="position:fixed;width:32vw;max-width:150px;height:50px;right: 0px; bottom: 55px;z-index:20000;">Avvia Timer</a>
+        <button class="btn btn-danger btn-sm primo_piano " onclick=show_tags() style="position:fixed;width:32vw;max-width:150px;height:50px;right: 0px; bottom: 0px;" id="salva_replay" disabled>Salva Replay<br />Azione</button>
+        <div id="crediti_residui" class='btn btn-sm btn-light primo_piano' style="position:fixed;left: 33.8vw; bottom: 0px;width:33.3vw;max-width:170px;height:50px;"></div>	
+        <button  class="btn btn-success btn-sm primo_piano" onclick=gestisci_replay() style="position:fixed;left: 0px; bottom: 0px;width:33.3vw;max-width:170px;height:50px;z-index:10;" id="vedi_replay">Vedi<br />Replay</button>
+
+    </div>	
+     </header>
+
+
+    <div  id="replay_div" class="row" style="display:none;position:absolute;top:40px;left:0px;">
+        <div class="container-fluid">
+    <div class="row">
+        <div class="col-md-6 col-sm-6 col-xs-12 lista_btn" id="replay_btn">
+        </div>	
+        <div class="col-md-6 col-sm-6 col-xs-12"  style="max-height:calc(70vh-80px);">
+          <video id="player"   class="player_video" controls preload="auto"></video>
+            <div class="reaction-container">
+                <div class="view-count">
+                    <span id="view-counter">0</span> Visualizzazioni
+                </div>
+                <div class="view-count">
+                    <a href="javascript:;" id="download" data-filename="" class="reaction-btn">Download</a>
+                </div>
+                <div class="reaction-buttons">
+                    <button id="like-btn" class="reaction-btn">
+                        👍 <span id="like-count">0</span>
+                    </button>
+                    <button id="dislike-btn" class="reaction-btn">
+                        👎 <span id="dislike-count">0</span>
+                    </button>
+                </div>
+            </div>
+
+
+
+
+
+            <button onclick=delete_video() class="btn btn-danger btn-sm" style="position:fixed;right: 25%; top: 0;background: #bb2d3b;color: #fff;display:none;" id="elimina_video">Elimina<br />Selezionati</button>
+            <button onclick=share_modal() class="btn btn-success btn-sm" style="position:fixed;right: 30px; top: 0;display:none;" id="condividi_file_singolo">Condividi<br />Video</button>
+            <button onclick=share_modal() class="btn btn-success btn-sm" style="position:fixed;right: 30px; top: 0;display:none;" id="condividi_files_multipli">Condividi<br />Album</button>
+
+
+        </div>	
+    </div>	
+        </div>
+
+  </div>
+
+
+
+
+</body>
+
+<script>
+let orient = localStorage.getItem("orientation") || 'landscape';
+
+
+let txt_home = sessionStorage.getItem("txt_home") || 'CASA';
+let home_goal = sessionStorage.getItem("home_goal") || '0';
+let txt_away = sessionStorage.getItem("txt_away") || 'OSPITI';
+let away_goal = sessionStorage.getItem("away_goal") || '0';
+let curr_minutes = sessionStorage.getItem("curr_minutes") || '1';
+let indicatore_tempo = sessionStorage.getItem("indicatore_tempo") || 'PT';
+
+
+$("#txt_home").val(txt_home);
+$(".home_tags").val(txt_home);
+
+$("#home_goal").val(home_goal);
+
+$("#txt_away").val(txt_away);
+$(".away_tags").val(txt_away);
+$("#away_goal").val(away_goal);
+
+$("#minutes").val(curr_minutes);
+$("#indicatore_tempo").val(indicatore_tempo);
+
+function isScreenOrientationSupported() {
+    try {
+        return (typeof screen !== 'undefined' && 
+                screen.orientation &&
+                typeof screen.orientation.type === 'string');
+    } catch(e) {
+        return false;
+    }
+}
+
+
+
+function change_orientation()
+{
+    if (orient == 'landscape')
+        orient = 'portrait';
+    else
+        orient = 'landscape';
+
+//	console.log("orient: " + orient);
+
+    localStorage.setItem("orientation",orient);
+    screen.orientation.lock(orient);
+/*	$("#padre_di_tutto").hide();
+    $("#ruota").show();
+
+    alert("ori: " + orient + " real: " + screen.orientation.type);
+
+  if (screen.orientation.type == orient + '-primary')
+    {
+        $("#padre_di_tutto").show();
+        $("#ruota").hide();
+    }
+*/
+
+}
+
+
+
+if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+    $("btn_ruota").hide();
+}
+else
+{
+
+
+
+if (isScreenOrientationSupported()) {
+    screen.orientation.lock(orient);
+    //console.log("orient: " + orient);
+    //$("#ruota").show();
+    $("#btn_ruota").show();
+
+} else {
+    //$("#ruota").hide();
+    $("#btn_ruota").hide();
+
+}
+
+
+
+
+}
+//let gradi = 90;
+
+let script = document.createElement('script');
+script.src = `js/yalper_nocompr.js?v=${new Date().getTime()}`;
+document.head.appendChild(script);
+
+/*
+screen.orientation.addEventListener('change', function() {
+    alert("ori: " + orient + " real: " + screen.orientation.type);
+
+
+    if ((screen.orientation.type == 'landscape-primary') || (screen.orientation.type == 'landscape-secondary'))
+        gradi = 90;
+    if ((screen.orientation.type == 'portrait-primary') || (screen.orientation.type == 'portrait-secondary'))
+        gradi = 0;
+
+    alert("ori: " + orient + " real: " + gradi);
+
+  if (orient == gradi)
+    {
+        $("#padre_di_tutto").show();
+        $("#ruota").hide();
+    }
+else
+    {
+        $("#padre_di_tutto").hide();
+        $("#ruota").show();
+    }
+});*/
+
+function soloAlfanumericoConSpazi(event) {
+  const char = String.fromCharCode(event.which || event.keyCode);
+  const pattern = /^[a-zA-Z0-9\s]+$/;
+  if (!pattern.test(char)) {
+    event.preventDefault();
+    return false;
+  }
+  return true;
+}
+
+function soloNumerico(event) {
+  const char = String.fromCharCode(event.which || event.keyCode);
+  const pattern = /^[0-9]+$/;
+  if (!pattern.test(char)) {
+    event.preventDefault();
+    return false;
+  }
+  return true;
+}
+
+
+function salvaSettingsEvento()
+{
+    sessionStorage.setItem("txt_home", $("#txt_home").val());
+    sessionStorage.setItem("home_goal", $("#home_goal").val() || '0');
+
+
+    sessionStorage.setItem("txt_away", $("#txt_away").val());
+    sessionStorage.setItem("away_goal", $("#away_goal").val() || '0');
+
+    sessionStorage.setItem("curr_minutes", $("#minutes").val() || '1');
+    sessionStorage.setItem("indicatore_tempo", $("#indicatore_tempo option:selected").val() || 'PT');
+
+
+
+     txt_home = sessionStorage.getItem("txt_home");
+     home_goal = sessionStorage.getItem("home_goal");
+     txt_away = sessionStorage.getItem("txt_away");
+     away_goal = sessionStorage.getItem("away_goal");
+     curr_minutes = sessionStorage.getItem("curr_minutes");
+     indicatore_tempo = sessionStorage.getItem("indicatore_tempo");
+
+    $("#txt_home").val(txt_home);
+    $("#home_goal").val(home_goal);
+
+    $("#txt_away").val(txt_away);
+    $("#away_goal").val(away_goal);	
+
+    $(".home_tags").html(txt_home);
+    $(".away_tags").html(txt_away);
+
+
+    $("#minutes").val(curr_minutes);
+    //$("#overlay").html("<span class=' btn btn-light' style='opacity: 0.5;'><img src='img/pencil.png'>&nbsp;&nbsp;" + txt_home + " " + home_goal + " - " + away_goal + " " + txt_away + "</span>");
+
+    minutaggio = setInterval(aggiungi_minuto,60000);
+
+    aggiorna_tabellone();
+
+    $("#wrapper_settings_partita").hide();
+}
+
+
+function reset_minuti()
+{
+    sessionStorage.setItem("curr_minutes", '1');
+    curr_minutes = 1;
+    $("#minutes").val(curr_minutes);
+
+}
+</script>	
+</html>

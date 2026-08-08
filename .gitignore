@@ -1,0 +1,11 @@
+config/secrets.local.php
+client_secret*.json
+youtube_token.json
+install/install.conf
+yalperit_db.mysql.sql
+*.data.sql
+/vendor/
+/node_modules/
+*.log
+.DS_Store
+Thumbs.db

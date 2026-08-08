@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="favicons/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon16.png">
+    <link rel="manifest" href="manifest.json?ff" />
+    <meta name="apple-mobile-web-app-title" content="YalpeR - LiveReplay">
+<meta name="google-adsense-account" content="ca-pub-9880317414365518">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="favicons/favicon180.png">
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9880317414365518"  crossorigin="anonymous"></script>    
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="js/button.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css" type="text/css">
+    <title>YalpeR - LiveReplay</title>
+  </head>
+  <body>
+    <div id="installContainer" class="hidden" style="display:none;">
+      <button id="butInstall" type="button">Installa l'applicazione sul tuo dispositivo</button>
+    </div>    
+    <br />
+    <br />
+    <div class="row justify-content-center">
+        <div id="errorMessages"></div>
+        <div class="col-sm-10 col-xs-12 col-md-8" style="margin: auto;background: #ffffff;box-shadow: 0px 14px 80px rgba(34, 35, 58, 0.2);padding: 40px 55px 45px 55px;transition: all .3s;border-radius: 20px;">
+			<div style="width:100%;text-align:center">
+			<img src="favicons/apple-touch-icon.png">
+			</div>
+			<br />
+            <h4>Closed Beta, mancano solo <span id="remainingSpots"></span> posti disponibili</h4>
+            <h6><b>Perché usare Yalper?</b></h6>
+            <h6>Puoi salvare sul cloud solo le azioni che ti interessano senza riempire lo smartphone di video e senza doverle estrapolare dopo.</h6>
+            <form id="loginForm">
+                <h3>Accedi</h3>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-control" name="email_signin" id="email_signin" />
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" class="form-control" name="password_signin" id="password_signin" />
+                </div>
+                <div class="form-group">
+                    <label>Evento <label style="font-size:12px;">Lasciare vuoto per dispositivo Singolo</label></label>
+                    <input type="text" class="form-control" name="event" id="event" />
+                </div>
+
+                <div class="form-group">
+                    <label>Versione <label style="font-size:12px;">(Se la Risoluzione non è supportata verrà cambiata in automatico)</label></label>
+                    <select id="version" name="version" class="form-control" onchange="change_version()">    
+                        <option value="0">640x360</option>
+                        <option value="1">1024x576</option>
+                        <option value="2">1152x648</option>
+                        <option value="3">1280x720 HD</option>
+                        <option value="4">1366x768</option>
+                        <option value="5">1600x900</option>
+                        <option value="6">1920x1080 Full HD</option>
+                        <option value="7">2560x1440</option>
+                        <option value="8">3840x2160 4K UHD</option>
+                        <option value="9">IPhone / iOS (FullHD)</option>
+                    </select>    
+                </div>
+                <div class="form-group">
+                    <label>Qualità Video <label style="font-size:12px;">(se il video scatta selezionare una qualità inferiore)</label></label>
+                    <select id="vbps" name="vbps" class="form-control" onchange="change_vbps()">    
+                        <option value="-1">Automatico</option>
+                        <option value="standard">Standard</option>
+                        <option value="standardPlus">Standard+</option>
+                        <option value="highQuality">Hi Quality</option>
+                        <option value="bestQuality">Best Quality</option>
+                        <option value="ultraQuality">Ultra Quality</option>
+                    </select>    
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-6">
+                        <button type="submit" name="mode" value="replay" class="btn btn-outline-primary btn-lg btn-block w-100" onclick="setLoginMode('replay')">Accedi Replay</button>
+                    </div>
+                    <div class="col-6">
+                        <button type="submit" name="mode" value="live" class="btn btn-outline-success btn-lg btn-block w-100" onclick="setLoginMode('live')">Accedi Live Stream</button>
+                    </div>
+                </div>
+                <input type="hidden" id="login_mode" name="login_mode" value="replay">
+            </form>
+            <br />
+            <a href="https://yalper.it/signup.php" class="btn btn-outline-danger btn-lg btn-block">Registrati</a>
+            <div id="log"></div>
+        </div>
+    </div>
+
+  </body>
+</html>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	const SERVER = "https://yalper.it/";
+	
+    // Initialize remaining spots
+    fetch(SERVER + 'API/logmein2.php')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('remainingSpots').innerHTML = `<b>${data.remainingSpots}</b>`;
+        });
+
+    // Variabile per la modalità di login
+    let loginMode = 'replay';
+
+    // Form submission
+   document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Ottieni la modalità dal campo hidden
+    loginMode = document.getElementById('login_mode').value;
+
+    // Creiamo un oggetto con i dati del form
+    const formData = {
+        email_signin: document.getElementById('email_signin').value,
+        password_signin: document.getElementById('password_signin').value,
+        version: document.getElementById('version').value,
+        event: document.getElementById('event').value,
+        vbps: document.getElementById('vbps').value
+    };
+	localStorage.setItem('event', document.getElementById('event').value);
+
+    fetch(SERVER + 'API/logmein2.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+			//alert(data.OTT);
+			localStorage.setItem('OTT', data.OTT);
+			localStorage.setItem('token', data.token);
+			localStorage.setItem('firstname', data.firstname);
+			localStorage.setItem('lastname', data.lastname);
+
+            // Redirect in base alla modalità scelta
+            if (loginMode === 'live') {
+                window.location.href = 'capture_live.html?v=' + Math.random() * 10000;
+            } else {
+                window.location.href = data.redirect; // capture.html per replay
+            }
+        } else {
+            document.getElementById('errorMessages').innerHTML =
+                `<div class="alert alert-danger">${data.message}</div>`;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('errorMessages').innerHTML =
+            `<div class="alert alert-danger">Errore di connessione al server</div>`;
+    });
+});
+
+    // PWA Installation
+    const divInstall = document.getElementById("installContainer");
+    const butInstall = document.getElementById("butInstall");
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        $('#installContainer').show();    
+        deferredPrompt = e;
+    });
+
+    butInstall.addEventListener('click', async () => {
+        if (deferredPrompt !== null) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                deferredPrompt = null;
+            }
+        }
+    });
+
+    // Service Worker Registration
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/service-worker.js");
+    }
+
+    // HTTPS Check
+    if (window.location.protocol === "http:") {
+        const requireHTTPS = document.getElementById("requireHTTPS");
+        if (requireHTTPS) {
+            const link = requireHTTPS.querySelector("a");
+            link.href = window.location.href.replace("http://", "https://");
+            requireHTTPS.classList.remove("hidden");
+        }
+    }
+
+    // Frame Check
+    if (window.self !== window.top) {
+        const requireTopLevel = document.getElementById("requireTopLevel");
+        if (requireTopLevel) {
+            const link = requireTopLevel.querySelector("a");
+            link.href = window.location.href;
+            requireTopLevel.classList.remove("hidden");
+        }
+    }
+
+    // Utility Functions
+    function makeevent(length) {
+        let result = '';
+        const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        const charactersLength = characters.length;
+        let counter = 0;
+        while (counter < length) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            counter += 1;
+        }
+        return result;
+    }
+
+    function getSupportedMimeTypes(media, types, codecs) {
+        const isSupported = MediaRecorder.isTypeSupported;
+        const supported = [];
+        types.forEach((type) => {
+            const mimeType = `${media}/${type}`;
+            codecs.forEach((codec) => [
+                `${mimeType};codecs=${codec}`,
+                `${mimeType};codecs=${codec.toUpperCase()}`
+            ].forEach(variation => {
+                if(isSupported(variation)) 
+                    supported.push(variation);
+            }));
+            if (isSupported(mimeType))
+                supported.push(mimeType);
+        });
+        return supported;
+    }
+
+    // Media Support Check
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        const videoTypes = ["webm", "ogg", "mp4", "x-matroska"];
+        const audioTypes = ["webm", "ogg", "mp3", "x-matroska"];
+        const codecs = ["should-not-be-supported","vp9", "vp9.0", "vp8", "vp8.0", "avc1", "av1", "h265", "h.265", "h264", "h.264", "opus", "pcm", "aac", "mpeg", "mp4a"];
+
+        const supportedVideos = getSupportedMimeTypes("video", videoTypes, codecs);
+
+        // Codecs Storage
+        let ls_codecs = localStorage.getItem('codecs');
+        if (!ls_codecs) {
+            localStorage.setItem('codecs', supportedVideos[0]);
+            ls_codecs = supportedVideos[0];
+        }
+
+        // Device Memory Check and Bitrate Setting
+        let vbps = getBitrateForDevice();
+        const RAM = navigator.deviceMemory;
+        
+        if (typeof(RAM) !== 'undefined') {
+            $("#log").append("<br />Questo dispositivo ha almeno " + RAM + "GB di RAM<br />Il codecs è: " + ls_codecs);
+            
+            if (RAM < 2) vbps = 'standard';
+            else if (RAM < 4) vbps = 'standardPlus';
+            else if (RAM < 8) vbps = 'highQuality';
+            else vbps = 'bestQuality';
+        }
+
+        // Bitrate Storage
+        let ls_vbps = localStorage.getItem('vbps');
+        if (ls_vbps) {
+            vbps = ls_vbps;
+        } else {
+            if (vbps) {
+                localStorage.setItem('vbps', vbps);
+            } else {
+                vbps = 'standardPlus';
+                localStorage.setItem('vbps', vbps);
+            }
+        }
+        document.getElementById("vbps").value = vbps;
+
+        // Version Storage
+        let version = localStorage.getItem('version');
+        if (!version) {
+            localStorage.setItem('version', '6'); // default to 1920x1080
+            version = '6';
+        }
+        document.getElementById("version").value = version;
+    }
+
+    // Duration Check
+    let duration = localStorage.getItem('duration');
+    if (duration == null) {
+        localStorage.setItem('duration', 15);
+    }
+});
+
+// Utility Functions for Form Controls
+function getBitrateForDevice() {
+    const isLowEndDevice = navigator.hardwareConcurrency < 4;
+    return isLowEndDevice ? 'standard' : 'standardPlus';
+}
+
+function change_version() {
+    const version = document.getElementById("version").value;
+    localStorage.setItem('version', version);
+}
+
+function change_vbps() {
+    const vbps = document.getElementById("vbps").value;
+    localStorage.setItem('vbps', vbps);
+}
+
+function setLoginMode(mode) {
+    document.getElementById('login_mode').value = mode;
+}
+
+</script>	

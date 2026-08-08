@@ -1,0 +1,41 @@
+# Copiare in install/install.conf e proteggere con chmod 600. Dopo il primo
+# avvio l'installer ne conserva una copia privata fuori dal webroot in
+# /home/yalperit/.config/yalper/install.conf.
+# Questo e un file shell: non aggiungere spazi attorno a "=" e racchiudere
+# tra apici singoli i valori che contengono caratteri speciali.
+
+DOMAIN='yalper.it'
+SERVER_ALIAS='www.yalper.it'
+APP_ROOT='/home/yalperit/web/yalper.it/public_html'
+
+DB_NAME='yalperit_db'
+DB_USER='yalperit_u1'
+DB_PASSWORD='CHANGE_ME_WITH_A_LONG_RANDOM_PASSWORD'
+
+# Primo account, creato attivo soltanto se la tabella users e vuota.
+ADMIN_EMAIL='CHANGE_ME@example.com'
+ADMIN_PASSWORD='CHANGE_ME_WITH_A_STRONG_LOGIN_PASSWORD'
+ADMIN_FIRSTNAME='Andrea'
+ADMIN_LASTNAME='Admin'
+ADMIN_MOBILE=''
+
+# Devono appartenere alla stessa applicazione Pusher usata dai client.
+PUSHER_KEY='CHANGE_ME'
+PUSHER_SECRET='CHANGE_ME'
+PUSHER_APP_ID='CHANGE_ME'
+PUSHER_CLUSTER='eu'
+
+# yes: importa database/schema.sql (solo struttura, nessun dato) soltanto se
+# il DB non contiene tabelle.
+# no: richiede che lo schema users esista gia.
+IMPORT_DB_SCHEMA='yes'
+
+# Su un server nuovo lasciare no finche upload/uploads non contiene i media
+# coerenti con il DB. Su un aggiornamento dell'host attuale usare yes.
+ENABLE_CRON='no'
+
+# Abilitare solo dopo che DOMAIN e SERVER_ALIAS puntano a questo server.
+ENABLE_TLS='no'
+LETSENCRYPT_EMAIL='admin@example.com'
+
+PHP_TIMEZONE='Europe/Rome'
