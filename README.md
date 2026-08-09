@@ -22,7 +22,7 @@
 
 Yalper è una piattaforma **LiveReplay web** pensata per catturare i momenti che meritano una seconda visione: un gol, una giocata, un arrivo, un'esibizione o qualunque istante che non può aspettare il montaggio del giorno dopo.
 
-Funziona direttamente dal browser, trasforma le registrazioni in contenuti riproducibili e condivisibili e accompagna tutto il flusso, dalla cattura fino allo streaming HLS. Niente applicazioni mastodontiche e niente pipeline misteriose: Yalper è un sistema concreto, costruito sul campo e affinato intorno a un'esigenza reale.
+Funziona direttamente dal tuo smartphone, trasforma le registrazioni in contenuti riproducibili e condivisibili e accompagna tutto il flusso, dalla cattura fino allo streaming HLS. Niente applicazioni mastodontiche e niente pipeline misteriose: Yalper è un sistema concreto, costruito sul campo e affinato intorno a un'esigenza reale.
 
 > **Registra adesso. Elabora automaticamente. Rivivi subito.**
 
